@@ -19,8 +19,9 @@ import tmnt.example.numberprogress.R;
 
 public class NumberProgress extends View {
 
-    private int bgColor = Color.parseColor("#009dff");
+    private int bgColor = Color.BLUE;
     private int textColor = Color.BLACK;
+    private int progressColor = Color.parseColor("#009dff");
     private float textSize;
     private Paint outPaint;
     private Paint insidePaint;
@@ -29,7 +30,7 @@ public class NumberProgress extends View {
     private int height;
     private int strok_witch;
     private int max;
-    private int progess = 0;
+    private int progress = 0;
     private int current;
     private final static int MAX_PROGRESS = 100;
     private static final String TAG = "NumberProgress";
@@ -46,6 +47,10 @@ public class NumberProgress extends View {
         this.textSize = textSize;
     }
 
+    public void setProgressColor(int progressColor) {
+        this.progressColor = progressColor;
+    }
+
     public void setMax(int max) {
         this.max = max;
     }
@@ -53,13 +58,13 @@ public class NumberProgress extends View {
     public void setProgess(int progress) {
         Log.i(TAG, "setProgess: width" + width);
         Log.i(TAG, "setProgess: max" + max);
-        this.progess = (width * progress / max - height / 2-10);
+
+        this.progress = (width * progress / max);
         this.current = progress;
-        if (max != 0 && progress > max) {
-            return;
+        if (max != 0 && this.progress == width) {
+            this.progress = this.progress - height;
         }
-        Log.i(TAG, "setProgess: " + this.progess);
-        Log.i(TAG, "setProgess: current" + current);
+        Log.i(TAG, "setProgess: " + this.progress);
         invalidate();
     }
 
@@ -84,14 +89,14 @@ public class NumberProgress extends View {
         outPaint = new Paint();
         outPaint.setAntiAlias(true);
         outPaint.setStrokeCap(Paint.Cap.ROUND);
-        outPaint.setColor(Color.BLUE);
+        outPaint.setColor(bgColor);
         outPaint.setStyle(Paint.Style.FILL);
 
         insidePaint = new Paint();
         insidePaint.setAntiAlias(true);
         insidePaint.setStrokeCap(Paint.Cap.ROUND);
         insidePaint.setStyle(Paint.Style.FILL);
-        insidePaint.setColor(bgColor);
+        insidePaint.setColor(progressColor);
 
         textPaint = new Paint();
         textPaint.setAntiAlias(true);
@@ -104,9 +109,10 @@ public class NumberProgress extends View {
 
     private void initAttribute(Context context, AttributeSet attributeSet) {
         TypedArray typedArray = context.obtainStyledAttributes(attributeSet, R.styleable.NumberProgress);
-        bgColor = typedArray.getColor(R.styleable.NumberProgress_backgroundColor, Color.parseColor("#009dff"));
+        progressColor = typedArray.getColor(R.styleable.NumberProgress_progressColor, Color.parseColor("#009dff"));
         textColor = typedArray.getColor(R.styleable.NumberProgress_textColor, Color.BLACK);
         textSize = typedArray.getDimension(R.styleable.NumberProgress_textSize, DensityUtils.sp2px(context, 12));
+        bgColor = typedArray.getColor(R.styleable.NumberProgress_backgroundColor, Color.BLUE);
     }
 
     @Override
@@ -168,7 +174,7 @@ public class NumberProgress extends View {
         canvas.drawCircle(width - height / 2, height / 2
                 , height / 2, outPaint);
 
-        canvas.drawLine(height / 2, height / 2, height / 2 + progess
+        canvas.drawLine(height / 2, height / 2, height / 2 + progress
                 , height / 2, insidePaint);
 
         canvas.drawText(String.valueOf(show), width / 2, height / 2 + 10, textPaint);

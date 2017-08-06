@@ -4,5 +4,6 @@
         <attr name="backgroundColor" format="color"></attr>
         <attr name="textColor" format="color"></attr>
         <attr name="textSize" format="dimension"></attr>
+        <attr name="progressColor" format="color"></attr>
     </declare-styleable>
 </resources>
