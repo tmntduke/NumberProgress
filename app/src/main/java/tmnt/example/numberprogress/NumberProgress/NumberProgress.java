@@ -5,6 +5,8 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -32,8 +34,28 @@ public class NumberProgress extends View {
     private int max;
     private int progress = 0;
     private int current;
+    private boolean isStart;
+    private OnProgressFinishLinstener mOnProgressFinishLinstener;
+
     private final static int MAX_PROGRESS = 100;
     private static final String TAG = "NumberProgress";
+
+    public NumberProgress(Context context) {
+        super(context);
+        init(context);
+    }
+
+    public NumberProgress(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+        initAttribute(context, attrs);
+        init(context);
+    }
+
+    public NumberProgress(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        initAttribute(context, attrs);
+        init(context);
+    }
 
     public void setBgColor(int bgColor) {
         this.bgColor = bgColor;
@@ -55,40 +77,29 @@ public class NumberProgress extends View {
         this.max = max;
     }
 
-    public void setProgess(int progress) {
-        Log.i(TAG, "setProgess: width" + width);
-        Log.i(TAG, "setProgess: max" + max);
-
-        this.progress = (width * progress / max);
+    public void setProgress(int progress) {
+        if (progress<max) {
+            this.progress = (width * progress / max);
+        } else {
+            this.progress = (width * progress / max) - height;
+        }
         this.current = progress;
-        if (max != 0 && this.progress == width) {
-            this.progress = this.progress - height;
+        if (max != 0 && progress == max) {
+            if (mOnProgressFinishLinstener != null) {
+                mOnProgressFinishLinstener.onFinish();
+            }
         }
         Log.i(TAG, "setProgess: " + this.progress);
         invalidate();
     }
 
-    public NumberProgress(Context context) {
-        super(context);
-        init(context);
-    }
-
-    public NumberProgress(Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
-        initAttribute(context, attrs);
-        init(context);
-    }
-
-    public NumberProgress(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        initAttribute(context, attrs);
-        init(context);
+    public void setOnProgressFinishLinstener(OnProgressFinishLinstener onProgressFinishLinstener) {
+        mOnProgressFinishLinstener = onProgressFinishLinstener;
     }
 
     private void init(Context context) {
         outPaint = new Paint();
         outPaint.setAntiAlias(true);
-        outPaint.setStrokeCap(Paint.Cap.ROUND);
         outPaint.setColor(bgColor);
         outPaint.setStyle(Paint.Style.FILL);
 
@@ -97,6 +108,7 @@ public class NumberProgress extends View {
         insidePaint.setStrokeCap(Paint.Cap.ROUND);
         insidePaint.setStyle(Paint.Style.FILL);
         insidePaint.setColor(progressColor);
+
 
         textPaint = new Paint();
         textPaint.setAntiAlias(true);
@@ -151,7 +163,7 @@ public class NumberProgress extends View {
         super.onSizeChanged(w, h, oldw, oldh);
         width = w;
         height = h;
-        strok_witch = h - 15;
+        strok_witch = h;
 
     }
 
